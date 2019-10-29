@@ -7,6 +7,7 @@ The running algorithms are First In First Out, Shortest Job First, Highest Prior
 Example:
 
 -- Process#   Arrival   Burst   Priority --
+
       1         1         6         9
       
       2         5         12        5
@@ -33,6 +34,7 @@ Result:
 -- Process#  Finished --
 
 FIFO:
+
       1         7
       2         19
       3         22
@@ -43,3 +45,31 @@ FIFO:
       8         89    
       9         121
       10        178
+      
+SJF:
+      1           7
+      3           10
+      4           17
+      2           29
+      5           44
+      8           57
+      7           72
+      6           89
+      9           121
+      10          178
+      
+ Highest Priority:
+ 
+      1           7
+      3           10
+      4           17
+      2           29
+      5           44
+      8           57
+      7           72
+      6           89
+      10         157
+      9          178
+      
+      
+      
