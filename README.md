@@ -35,6 +35,8 @@ Result:
 
 FIFO:
 
+First process come first process served
+
       1         7
       2         19
       3         22
@@ -48,6 +50,8 @@ FIFO:
       
 SJF:
 
+Process within arrival time and has the least burst time will get served first
+
       1           7
       3           10
       4           17
@@ -60,6 +64,8 @@ SJF:
       10          178
       
 Highest Priority:
+
+Process within arrival time and has the highest priority(lower value means higher priority) will get served first
  
       1           7
       3           10
