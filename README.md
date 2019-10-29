@@ -47,6 +47,7 @@ FIFO:
       10        178
       
 SJF:
+
       1           7
       3           10
       4           17
@@ -58,7 +59,7 @@ SJF:
       9           121
       10          178
       
- Highest Priority:
+Highest Priority:
  
       1           7
       3           10
