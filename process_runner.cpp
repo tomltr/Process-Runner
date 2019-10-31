@@ -96,13 +96,13 @@ void run_in_order(const vector<Process> &processes, fstream &file)
 
 // build processes list using the HEAP. 
 // SJF and Highest Priority function
-void build_shortest_burst(vector<Process> &processes, string mode)
+void build(vector<Process> &processes, string mode)
 {
   Heap heap(processes.size());
   if(mode == "shortest job first")
   {
     cout << "\nBuilding shortest job first Heap " << endl;
-    heap.build(processes);
+    heap.build_shortest_burst(processes);
     cout << "Finished building! " << endl;
   }
   else if(mode == "highest priority first")
@@ -134,7 +134,7 @@ void run_by_mode(string &mode, string &file_name,vector<Process> &process_list, 
     file_name.append(mode);
     writing.open(file_name, fstream::out);
     writing << "--- Process# Finished ---\n";
-    build_shortest_burst(process_list, mode);
+    build(process_list, mode);
     run_in_order(process_list, writing);
     writing.close();
   }
@@ -144,7 +144,7 @@ void run_by_mode(string &mode, string &file_name,vector<Process> &process_list, 
     file_name.append(mode);
     writing.open(file_name, fstream::out);
     writing << "--- Process# Finished ---\n";
-    build_shortest_burst(process_list, mode);
+    build(process_list, mode);
     run_in_order(process_list, writing);
     writing.close();
   }
