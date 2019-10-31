@@ -140,7 +140,7 @@ Process Heap::extract_min(vector<Process> &heap_list, int current_time)
 
 }
 
-void Heap::build( vector<Process> &process_list)
+void Heap::build_shortest_burst( vector<Process> &process_list)
 {
   int i = 0, j = 0, previous_arrival = 0;
   while(i < process_list.size())
