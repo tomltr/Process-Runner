@@ -21,7 +21,7 @@ class Heap
 
   public:
     Heap(const int capacity);
-    void build( vector<Process> &process_list);
+    void build_shortest_burst( vector<Process> &process_list);
     void build_highest_priority( vector<Process> &process_list);
 };
 
