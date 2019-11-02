@@ -43,7 +43,7 @@ void add_new_process(vector<Process> &processes, string &line)
 	    burst = stoi(value);
 	    break;
 	  default:
-	    break;
+	    cout << "Invalid case for position" << endl;
       }
       value.clear();
     }
