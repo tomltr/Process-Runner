@@ -4,6 +4,7 @@ Heap::Heap(const int capacity)
 {
   this->current_time = 0;
   this->heap_list.reserve(capacity);
+  this->original_data.reserve(capacity);
 }
 
 int Heap::get_current_time() const
@@ -108,7 +109,7 @@ Process Heap::extract_min(vector<Process> &heap_list, int current_time)
     {
       if (i*2 + 2 < heap_list.size())
       {
-	if (heap_list[i*2+1].get_burst() < heap_list[i*2+2].get_burst())
+	if (heap_list[i*2+1].get_burst() < heap_list[i*2+2].get_burst() || (heap_list[i*2+1].get_burst() == heap_list[i*2+2].get_burst() && heap_list[i*2+1].get_arrival() < heap_list[i*2+2].get_arrival()))
 	{
 	  this->swap_processes(i, (i*2)+1);
 	  i*=2;
@@ -123,7 +124,7 @@ Process Heap::extract_min(vector<Process> &heap_list, int current_time)
       }
       else if(i*2+1 < heap_list.size())
       {
-	if(heap_list[i*2+1].get_burst() < heap_list[i].get_burst())
+	if(heap_list[i*2+1].get_burst() < heap_list[i].get_burst() || (heap_list[i*2+1].get_burst() == heap_list[i].get_burst() && heap_list[i*2+1].get_arrival() < heap_list[i].get_arrival()))
 	{
 	  this->swap_processes(i, (i*2)+1);
 	  i*=2;
@@ -168,6 +169,7 @@ void Heap::build_shortest_burst( vector<Process> &process_list)
 
 void Heap::build_highest_priority(vector<Process> &process_list)
 {
+  this->set_current_time(0);
   int i = 0, j = 0, previous_arrival = 0;
   while(i < process_list.size())
   {
@@ -189,6 +191,22 @@ void Heap::build_highest_priority(vector<Process> &process_list)
    
     process_list[i].exchange(min);
     ++i;
+  }
+}
+
+void Heap::save_original_data(const vector<Process> &process_list)
+{
+  for(int i = 0; i < process_list.size(); ++i)
+  {
+    this->original_data.push_back(process_list[i]);
+  }
+}
+
+void Heap::revert_to_original(vector<Process> &process_list)
+{
+  for(int i = 0; i < this->original_data.size(); ++i)
+  {
+    process_list[i] = this->original_data[i];
   }
 }
 

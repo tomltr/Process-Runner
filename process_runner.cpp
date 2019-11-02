@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <deque>
 #include "Process.cpp"
 #include "Heap.cpp"
 
@@ -10,6 +11,10 @@ using std::string;
 using std::cout;
 using std::endl;
 using std::vector;
+using std::getline;
+using std::cin;
+using std::stoi;
+using std::deque;
 
 // Parsing process line by line from a file
 void add_new_process(vector<Process> &processes, string &line)
@@ -41,13 +46,11 @@ void add_new_process(vector<Process> &processes, string &line)
 	    break;
       }
       value.clear();
-
     }
   }
 
   priority = stoi(value);
   processes.push_back(Process(id, arrival, burst, priority));
-  
 }
 
 // print processes that are stored in processes list
@@ -78,7 +81,7 @@ void first_in_first_out(const vector<Process> &processes )
 }
 
 // run the processes in the modified list 
-void run_in_order(const vector<Process> &processes, fstream &file)
+void run_in_order(const vector<Process> &processes, fstream &writing)
 {
   cout << "\nwriting to file" << endl;
   int current_time = 0;
@@ -89,16 +92,15 @@ void run_in_order(const vector<Process> &processes, fstream &file)
       current_time += (processes[i].get_arrival() - current_time);
     }
     current_time += processes[i].get_burst();
-    file << processes[i].get_id() << " " << current_time << endl;
+    writing << processes[i].get_id() << " " << current_time << endl;
   }
   cout << "finished" << endl;
 }
 
 // build processes list using the HEAP. 
 // SJF and Highest Priority function
-void build(vector<Process> &processes, string mode)
+void build(Heap &heap, vector<Process> &processes, string mode)
 {
-  Heap heap(processes.size());
   if(mode == "shortest job first")
   {
     cout << "\nBuilding shortest job first Heap " << endl;
@@ -119,14 +121,13 @@ void build(vector<Process> &processes, string mode)
 }
 
 // run process based on given mode
-void run_by_mode(string &mode, string &file_name,vector<Process> &process_list, fstream &writing)
+void run_by_mode(string &mode, string &file_name, Heap &heap, vector<Process> &process_list, fstream &writing)
 {
-    cout << "Mode: " << mode << endl;
+    cout << "\nMode: " << mode << endl;
   if (mode == "first in first out")
   {
     run_in_order(process_list, writing);
     writing.close();
-
   }
   else if (mode == "shortest job first")
   {
@@ -134,7 +135,7 @@ void run_by_mode(string &mode, string &file_name,vector<Process> &process_list, 
     file_name.append(mode);
     writing.open(file_name, fstream::out);
     writing << "--- Process# Finished ---\n";
-    build(process_list, mode);
+    build(heap,process_list, mode);
     run_in_order(process_list, writing);
     writing.close();
   }
@@ -144,7 +145,7 @@ void run_by_mode(string &mode, string &file_name,vector<Process> &process_list, 
     file_name.append(mode);
     writing.open(file_name, fstream::out);
     writing << "--- Process# Finished ---\n";
-    build(process_list, mode);
+    build(heap, process_list, mode);
     run_in_order(process_list, writing);
     writing.close();
   }
@@ -153,6 +154,54 @@ void run_by_mode(string &mode, string &file_name,vector<Process> &process_list, 
     cout << "Invalid Mode!\n Exiting the program now...\n" << endl;
   }
 
+}
+
+// processes ran by round robin algorithm
+void round_robin(vector<Process> &process_list, int quantum_time, fstream &writing, string file_name)
+{
+  cout << "\nProcessing Round Robin... " << endl;
+  int current_time = process_list[0].get_arrival(), remaining_process = process_list.size();
+  deque<Process> deque;
+  deque.push_back(process_list[0]);
+  Process next;
+  file_name.append(" round robin");
+  writing.open(file_name, fstream::out);
+  writing << "--- Process# Finished ---\n";
+
+  for(int i = 1; remaining_process > 0;)
+  {
+    while(!deque.empty())
+    {
+      next = deque.front();
+      deque.pop_front();
+      if (next.get_burst() <= quantum_time)
+      {	
+	current_time += (next.get_burst());
+	next.set_burst(0);
+	--remaining_process;
+	writing << next.get_id() << " " << current_time << endl;
+      }
+      else
+      {
+	current_time += quantum_time;
+	next.set_burst(next.get_burst() - quantum_time);
+      }
+	while(i < process_list.size() && process_list[i].get_arrival() <= current_time)
+	{
+	  deque.push_back(process_list[i++]);
+	}
+	if (next.get_burst() > 0)
+	{
+	  deque.push_back(next);
+	}
+	if (deque.empty() && remaining_process > 0 )
+	{
+	  deque.push_back(process_list[i++]);
+	  current_time = process_list[i-1].get_arrival();
+	}
+      }
+  }
+    cout << "Finished Round Robin! " << endl;
 }
 
 
@@ -175,6 +224,7 @@ int main(int argc, char* argv[])
     const int MAX = 10;
     vector<Process> process_list;
     process_list.reserve(MAX);
+    Heap heap(MAX);
     int current_time = 0;
 
     if (reading.is_open())
@@ -190,16 +240,34 @@ int main(int argc, char* argv[])
 
       }
     }
+
+    cout << "\nSaving data to original_data list in heap" << endl;
+    heap.save_original_data(process_list);
+
     reading.close();
-    run_by_mode(mode, file_name, process_list, writing);
+    run_by_mode(mode, file_name, heap, process_list, writing);
 
     mode = "shortest job first";
     file_name = argv[1];
-    run_by_mode(mode, file_name, process_list, writing);
+    run_by_mode(mode, file_name, heap, process_list, writing);
+
+    cout << "\nReverting back to original" << endl;
+    heap.revert_to_original(process_list);
 
     mode = "highest priority first";
     file_name = argv[1];
-    run_by_mode(mode, file_name, process_list, writing);
+    run_by_mode(mode, file_name, heap, process_list, writing);
+
+    cout << "\nReverting back to original" << endl;
+    heap.revert_to_original(process_list);
+
+    cout << "\nFor Round Robin, please enter quantum time: ";
+    string quantum;
+    getline(cin, quantum);
+    int quantum_time = stoi(quantum);
+    cout << "quantum time: " << quantum_time << endl;
+    file_name = argv[1];
+    round_robin(process_list, quantum_time, writing, file_name);
 
     cout << "Done!" << endl;
   }
