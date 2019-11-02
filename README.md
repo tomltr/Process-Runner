@@ -2,7 +2,7 @@
 
 Given a file containing a list of processes the program will generate output files based on different schedule algorithms
 
-The running algorithms are First In First Out, Shortest Job First, Highest Priority and Round Robin(In Progress)
+The running algorithms are First In First Out, Shortest Job First, Highest Priority and Round Robin
 
 Example:
 
