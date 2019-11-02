@@ -83,7 +83,7 @@ Round Robin:
 
 Each process has a share given quantum time from the user.
 Processes that come within the running time will be placed on the queue first.
-Otherwise process that had run will be place last on the queue.
+Otherwise process that had run will be placed last on the queue.
       
       1           12
       3           15
