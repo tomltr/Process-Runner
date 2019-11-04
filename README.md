@@ -81,9 +81,12 @@ Process within arrival time and has the highest priority(lower value means highe
     
 Round Robin:
 
+
 Each process has a share given quantum time from the user.
 Processes that come within the running time will be placed on the queue first.
 Otherwise process that had run will be placed last on the queue.
+
+Quantum time: 5
       
       1           12
       3           15
